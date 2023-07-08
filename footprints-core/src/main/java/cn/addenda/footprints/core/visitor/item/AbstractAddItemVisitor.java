@@ -11,6 +11,7 @@ import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 
 import java.util.List;
 
@@ -82,7 +83,7 @@ public abstract class AbstractAddItemVisitor<T extends SQLStatement, R> extends 
 
     protected SQLExpr newItemBinaryOpExpr(String itemName, Object itemValue) {
         SQLBinaryOpExpr sqlBinaryOpExpr = new SQLBinaryOpExpr();
-        sqlBinaryOpExpr.setLeft(dataConvertorRegistry.parse(itemName));
+        sqlBinaryOpExpr.setLeft(new SQLIdentifierExpr(itemName));
         sqlBinaryOpExpr.setOperator(SQLBinaryOperator.Equality);
         sqlBinaryOpExpr.setRight(dataConvertorRegistry.parse(itemValue));
         return sqlBinaryOpExpr;
