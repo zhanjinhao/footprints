@@ -1,0 +1,97 @@
+package cn.addenda.footprints.client.mybatis.interceptor.dynamicsql;
+
+import cn.addenda.footprints.client.constant.Propagation;
+import cn.addenda.footprints.client.mybatis.interceptor.AbstractFootprintsMybatisInterceptor;
+import cn.addenda.footprints.client.utils.ConfigContextUtils;
+import cn.addenda.footprints.core.convertor.DataConvertorRegistry;
+import cn.addenda.footprints.core.convertor.DefaultDataConvertorRegistry;
+import cn.addenda.footprints.core.pojo.Binary;
+import cn.addenda.footprints.core.interceptor.dynamicsql.DynamicSQLContext;
+import cn.addenda.footprints.core.interceptor.dynamicsql.DynamicSQLException;
+import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
+
+import java.lang.reflect.Constructor;
+import java.time.ZoneId;
+import java.util.Properties;
+
+/**
+ * @author addenda
+ * @since 2023/6/8 22:58
+ */
+@Intercepts({
+        @Signature(type = Executor.class, method = "query",
+                args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class}),
+        @Signature(type = Executor.class, method = "query",
+                args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+        @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
+})
+public class MyBatisDynamicSQLInterceptor extends AbstractFootprintsMybatisInterceptor {
+    private DataConvertorRegistry dataConvertorRegistry;
+    private ZoneId zoneId;
+
+    @Override
+    public Object intercept(Invocation invocation) throws Throwable {
+        Binary<String, Propagation> binary = extract(invocation);
+        String msId = binary.getF1();
+        Propagation propagation = binary.getF2();
+        ConfigContextUtils.pushDynamicSQL(propagation);
+
+        try {
+            ConfigContextUtils.configDynamicSQL(propagation, dataConvertorRegistry,
+                    msIdExtractHelper.extractDynamicConditions(msId),
+                    msIdExtractHelper.extractConfigJoinUseSubQuery(msId),
+                    msIdExtractHelper.extractDynamicItems(msId),
+                    msIdExtractHelper.extractConfigDupThenNew(msId),
+                    msIdExtractHelper.extractConfigDuplicateKeyUpdate(msId),
+                    msIdExtractHelper.extractConfigUpdateItemMode(msId),
+                    msIdExtractHelper.extractConfigInsertSelectAddItemMode(msId));
+            return invocation.proceed();
+        } finally {
+            DynamicSQLContext.pop();
+        }
+    }
+
+    @Override
+    public void setProperties(Properties properties) {
+        super.setProperties(properties);
+        String aDataConvertorRegistry = (String) properties.get("dataConvertorRegistry");
+        String aZoneId = (String) properties.get("zoneId");
+        if (aZoneId != null && aZoneId.length() != 0) {
+            try {
+                zoneId = ZoneId.of(aZoneId);
+            } catch (Exception e) {
+                String msg = String.format("无法识别的ZoneId：[%s]。", aZoneId);
+                throw new DynamicSQLException(msg);
+            }
+        } else {
+            zoneId = ZoneId.systemDefault();
+        }
+
+        if (aDataConvertorRegistry != null) {
+            Class<? extends DataConvertorRegistry> aClass;
+            try {
+                aClass = (Class<? extends DataConvertorRegistry>) Class.forName(aDataConvertorRegistry);
+            } catch (Exception e) {
+                String msg = String.format("%s初始化失败：[%s]。", DataConvertorRegistry.class.getName(), aDataConvertorRegistry);
+                throw new DynamicSQLException(msg, e);
+            }
+
+            try {
+                Constructor<? extends DataConvertorRegistry> constructor = aClass.getConstructor(ZoneId.class);
+                this.dataConvertorRegistry = constructor.newInstance(zoneId);
+            } catch (Exception e) {
+                String msg = String.format("%s初始化失败：[%s]。", DataConvertorRegistry.class.getName(), aDataConvertorRegistry);
+                throw new DynamicSQLException(msg);
+            }
+        } else {
+            this.dataConvertorRegistry = new DefaultDataConvertorRegistry(zoneId);
+        }
+    }
+
+}
