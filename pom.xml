@@ -13,6 +13,7 @@
         <module>footprints-core</module>
         <module>footprints-cdc</module>
         <module>footprints-expression</module>
+        <module>footprints-all</module>
     </modules>
 
     <properties>
