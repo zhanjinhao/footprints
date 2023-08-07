@@ -29,7 +29,7 @@ public class TombstoneConfigConfiguration implements ImportAware {
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public TombstoneAdvisor argResLogAdvisor() {
+    public TombstoneAdvisor tombstoneAdvisor() {
         TombstoneAdvisor argResLogAdvisor = new TombstoneAdvisor();
         argResLogAdvisor.setAdvice(new SpringTombstoneInterceptor());
         if (this.annotationAttributes != null) {
