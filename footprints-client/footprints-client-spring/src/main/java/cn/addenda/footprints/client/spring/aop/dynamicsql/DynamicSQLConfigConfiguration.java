@@ -41,7 +41,7 @@ public class DynamicSQLConfigConfiguration implements ImportAware {
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public DynamicSQLAdvisor argResLogAdvisor(BeanFactory beanFactory) {
+    public DynamicSQLAdvisor dynamicSQLAdvisor(BeanFactory beanFactory) {
         DynamicSQLAdvisor argResLogAdvisor = new DynamicSQLAdvisor();
         SpringDynamicSQLInterceptor springDynamicSQLInterceptor = new SpringDynamicSQLInterceptor();
         DataConvertorRegistry dataConvertorRegistry = getDataConvertorRegistry(beanFactory);

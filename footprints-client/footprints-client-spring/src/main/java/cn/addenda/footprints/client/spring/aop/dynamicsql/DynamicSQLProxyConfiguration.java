@@ -32,6 +32,7 @@ public class DynamicSQLProxyConfiguration implements ImportAware {
 
     Map<String, DynamicSQLRewriterConfigurer> dynamicSQLRewriterConfigurerMap;
 
+    private int order;
     private boolean removeEnter;
     private DynamicSQLRewriter dynamicSQLRewriter;
     private InsertSelectAddItemMode insertSelectAddItemMode;
@@ -53,6 +54,7 @@ public class DynamicSQLProxyConfiguration implements ImportAware {
     public DynamicSQLBeanPostProcessor dynamicSQLBeanPostProcessor(BeanFactory beanFactory) {
         setDynamicSQLRewriter(beanFactory);
 
+        this.order = annotationAttributes.getNumber("order");
         this.removeEnter = annotationAttributes.getBoolean("removeEnter");
         this.insertSelectAddItemMode = annotationAttributes.getEnum("insertSelectAddItemMode");
         this.duplicateKeyUpdate = annotationAttributes.getBoolean("duplicateKeyUpdate");
@@ -94,6 +96,10 @@ public class DynamicSQLProxyConfiguration implements ImportAware {
                     duplicateKeyUpdate, updateItemMode, joinUseSubQuery);
         }
 
+        @Override
+        public int getOrder() {
+            return order;
+        }
     }
 
 

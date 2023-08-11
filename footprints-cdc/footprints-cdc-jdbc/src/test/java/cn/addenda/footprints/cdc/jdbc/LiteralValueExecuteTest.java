@@ -40,7 +40,7 @@ public class LiteralValueExecuteTest {
                         "values (?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
         ps.setLong(1, 1L);
         ps.setInt(2, 2);
-        ps.setString(3, "3\\'");
+        ps.setString(3, "3\\'\t");
         ps.setDate(4, new Date(System.currentTimeMillis()));
         ps.setTime(5, new Time(System.currentTimeMillis()));
         ps.setObject(6, ZonedDateTime.now(ZoneId.of("America/New_York")));

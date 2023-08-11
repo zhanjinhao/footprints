@@ -1,6 +1,7 @@
 package cn.addenda.footprints.client.mybatis.interceptor.dynamicsql;
 
 import cn.addenda.footprints.client.constant.Propagation;
+import cn.addenda.footprints.client.mybatis.helper.MsIdExtractHelper;
 import cn.addenda.footprints.client.mybatis.interceptor.AbstractFootprintsMybatisInterceptor;
 import cn.addenda.footprints.client.utils.ConfigContextUtils;
 import cn.addenda.footprints.core.convertor.DataConvertorRegistry;
@@ -8,6 +9,7 @@ import cn.addenda.footprints.core.convertor.DefaultDataConvertorRegistry;
 import cn.addenda.footprints.core.pojo.Binary;
 import cn.addenda.footprints.core.interceptor.dynamicsql.DynamicSQLContext;
 import cn.addenda.footprints.core.interceptor.dynamicsql.DynamicSQLException;
+import lombok.Setter;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -32,8 +34,36 @@ import java.util.Properties;
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
 })
 public class MyBatisDynamicSQLInterceptor extends AbstractFootprintsMybatisInterceptor {
+
+    @Setter
     private DataConvertorRegistry dataConvertorRegistry;
+
+    @Setter
     private ZoneId zoneId;
+
+    public MyBatisDynamicSQLInterceptor() {
+        super();
+    }
+
+    public MyBatisDynamicSQLInterceptor(MsIdExtractHelper msIdExtractHelper) {
+        super(msIdExtractHelper);
+    }
+
+    public MyBatisDynamicSQLInterceptor(MsIdExtractHelper msIdExtractHelper, DataConvertorRegistry dataConvertorRegistry, ZoneId zoneId) {
+        super(msIdExtractHelper);
+        this.dataConvertorRegistry = dataConvertorRegistry;
+        this.zoneId = zoneId;
+    }
+
+    public MyBatisDynamicSQLInterceptor(MsIdExtractHelper msIdExtractHelper, DataConvertorRegistry dataConvertorRegistry) {
+        super(msIdExtractHelper);
+        this.dataConvertorRegistry = dataConvertorRegistry;
+    }
+
+    public MyBatisDynamicSQLInterceptor(DataConvertorRegistry dataConvertorRegistry, ZoneId zoneId) {
+        this.dataConvertorRegistry = dataConvertorRegistry;
+        this.zoneId = zoneId;
+    }
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {

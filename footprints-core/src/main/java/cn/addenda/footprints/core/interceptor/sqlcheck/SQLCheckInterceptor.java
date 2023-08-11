@@ -46,6 +46,10 @@ public class SQLCheckInterceptor extends ConnectionPrepareStatementInterceptor {
 
     @Override
     protected String process(String sql) {
+        if (!SQLCheckContext.contextActive()) {
+            return sql;
+        }
+
         if (checkAllColumn && Boolean.TRUE.equals(SQLCheckContext.getCheckAllColumn())
                 && JdbcSQLUtils.isSelect(sql) && sqlChecker.allColumnExists(sql)) {
             String msg = String.format("SQL: [%s], 返回字段包含了*或tableName.*语法！", removeEnter(sql));

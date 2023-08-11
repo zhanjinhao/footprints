@@ -29,7 +29,7 @@ public class SQLCheckConfigConfiguration implements ImportAware {
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public SQLCheckAdvisor argResLogAdvisor() {
+    public SQLCheckAdvisor sqlCheckAdvisor() {
         SQLCheckAdvisor argResLogAdvisor = new SQLCheckAdvisor();
         argResLogAdvisor.setAdvice(new SpringSQLCheckInterceptor());
         argResLogAdvisor.setOrder(annotationAttributes.<Integer>getNumber("order"));

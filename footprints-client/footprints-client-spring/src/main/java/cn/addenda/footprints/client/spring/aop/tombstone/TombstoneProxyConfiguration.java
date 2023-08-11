@@ -28,6 +28,7 @@ public class TombstoneProxyConfiguration implements ImportAware {
 
     protected AnnotationAttributes annotationAttributes;
     private Map<String, TombstoneRewriterConfigurer> tombstoneRewriterConfigurerMap;
+    private int order;
     private boolean removeEnter;
     private TombstoneSqlRewriter tombstoneSqlRewriter;
     private boolean joinUseSubQuery;
@@ -47,6 +48,7 @@ public class TombstoneProxyConfiguration implements ImportAware {
     public TombstoneBeanPostProcessor tombstoneBeanPostProcessor(BeanFactory beanFactory) {
         setTombstoneSqlRewriter(beanFactory);
 
+        this.order = annotationAttributes.getNumber("order");
         this.removeEnter = annotationAttributes.getBoolean("removeEnter");
         this.joinUseSubQuery = annotationAttributes.getBoolean("joinUseSubQuery");
         return new TombstoneBeanPostProcessor();
@@ -82,6 +84,11 @@ public class TombstoneProxyConfiguration implements ImportAware {
         @Override
         protected TombstoneInterceptor getInterceptor() {
             return new TombstoneInterceptor(removeEnter, tombstoneSqlRewriter, joinUseSubQuery);
+        }
+
+        @Override
+        public int getOrder() {
+            return order;
         }
     }
 

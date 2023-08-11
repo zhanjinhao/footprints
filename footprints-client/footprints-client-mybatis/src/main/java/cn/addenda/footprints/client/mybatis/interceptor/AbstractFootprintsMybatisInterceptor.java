@@ -7,6 +7,7 @@ import cn.addenda.footprints.client.mybatis.helper.MsIdExtractHelper;
 import cn.addenda.footprints.core.FootprintsException;
 import cn.addenda.footprints.core.pojo.Binary;
 import cn.addenda.footprints.core.interceptor.dynamicsql.DynamicSQLException;
+import lombok.Setter;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Invocation;
@@ -21,7 +22,16 @@ import java.util.Properties;
  * @since 2023/6/11 12:19
  */
 public abstract class AbstractFootprintsMybatisInterceptor implements Interceptor {
+
+    @Setter
     protected MsIdExtractHelper msIdExtractHelper;
+
+    protected AbstractFootprintsMybatisInterceptor(MsIdExtractHelper msIdExtractHelper) {
+        this.msIdExtractHelper = msIdExtractHelper;
+    }
+
+    protected AbstractFootprintsMybatisInterceptor() {
+    }
 
     @Override
     public Object plugin(Object target) {
@@ -46,20 +56,22 @@ public abstract class AbstractFootprintsMybatisInterceptor implements Intercepto
 
     @Override
     public void setProperties(Properties properties) {
-        String aMsIdExtractHelper = (String) properties.get("msIdExtractHelper");
+        if (msIdExtractHelper != null) {
+            String aMsIdExtractHelper = (String) properties.get("msIdExtractHelper");
 
-        if (aMsIdExtractHelper != null) {
-            Class<? extends MsIdExtractHelper> aClass;
-            try {
-                aClass = (Class<? extends MsIdExtractHelper>) Class.forName(aMsIdExtractHelper);
-            } catch (Exception e) {
-                String msg = String.format("找不到类，MsIdExtractHelper初始化失败：[%s]。", aMsIdExtractHelper);
-                throw new DynamicSQLException(msg, e);
+            if (aMsIdExtractHelper != null) {
+                Class<? extends MsIdExtractHelper> aClass;
+                try {
+                    aClass = (Class<? extends MsIdExtractHelper>) Class.forName(aMsIdExtractHelper);
+                } catch (Exception e) {
+                    String msg = String.format("找不到类，MsIdExtractHelper初始化失败：[%s]。", aMsIdExtractHelper);
+                    throw new DynamicSQLException(msg, e);
+                }
+
+                this.msIdExtractHelper = newInstance(aClass);
+            } else {
+                this.msIdExtractHelper = DefaultMsIdExtractHelper.getInstance();
             }
-
-            this.msIdExtractHelper = newInstance(aClass);
-        } else {
-            this.msIdExtractHelper = DefaultMsIdExtractHelper.getInstance();
         }
     }
 

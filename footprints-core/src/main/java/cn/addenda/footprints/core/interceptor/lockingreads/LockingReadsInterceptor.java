@@ -20,6 +20,9 @@ public class LockingReadsInterceptor extends ConnectionPrepareStatementIntercept
     }
 
     protected String process(String sql) {
+        if (!LockingReadsContext.contextActive()) {
+            return sql;
+        }
         String lock = LockingReadsContext.getLock();
         if (lock == null) {
             return sql;

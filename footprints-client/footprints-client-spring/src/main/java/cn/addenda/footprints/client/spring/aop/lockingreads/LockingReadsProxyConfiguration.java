@@ -1,5 +1,7 @@
 package cn.addenda.footprints.client.spring.aop.lockingreads;
 
+import cn.addenda.footprints.client.spring.aop.AbstractFootprintsBeanPostProcessor;
+import cn.addenda.footprints.core.interceptor.lockingreads.LockingReadsInterceptor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +15,12 @@ import org.springframework.core.type.AnnotationMetadata;
  * @since 2022/9/29 13:51
  */
 @Configuration
-public class LockingReadsConfiguration implements ImportAware {
+public class LockingReadsProxyConfiguration implements ImportAware {
 
     protected AnnotationAttributes annotationAttributes;
+
+    private int order;
+    private boolean removeEnter;
 
     @Override
     public void setImportMetadata(AnnotationMetadata importMetadata) {
@@ -29,13 +34,23 @@ public class LockingReadsConfiguration implements ImportAware {
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public LockingReadsAdvisor argResLogAdvisor() {
-        LockingReadsAdvisor argResLogAdvisor = new LockingReadsAdvisor();
-        argResLogAdvisor.setAdvice(new SpringLockingReadsInterceptor());
-        if (this.annotationAttributes != null) {
-            argResLogAdvisor.setOrder(annotationAttributes.<Integer>getNumber("order"));
+    public LockingReadsPostProcessor lockingReadsPostProcessor() {
+        this.order = annotationAttributes.getNumber("order");
+        this.removeEnter = annotationAttributes.getBoolean("removeEnter");
+        return new LockingReadsPostProcessor();
+    }
+
+    private class LockingReadsPostProcessor extends AbstractFootprintsBeanPostProcessor<LockingReadsInterceptor> {
+
+        @Override
+        protected LockingReadsInterceptor getInterceptor() {
+            return new LockingReadsInterceptor(removeEnter);
         }
-        return argResLogAdvisor;
+
+        @Override
+        public int getOrder() {
+            return order;
+        }
     }
 
 }

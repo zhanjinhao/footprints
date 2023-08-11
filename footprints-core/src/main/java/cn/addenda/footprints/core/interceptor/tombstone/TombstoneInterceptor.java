@@ -26,6 +26,10 @@ public class TombstoneInterceptor extends ConnectionPrepareStatementInterceptor 
 
     @Override
     protected String process(String sql) {
+        if (!TombstoneContext.contextActive()) {
+            return sql;
+        }
+
         Boolean disable = JdbcSQLUtils.getOrDefault(TombstoneContext.getDisable(), false);
         if (Boolean.TRUE.equals(disable)) {
             return sql;

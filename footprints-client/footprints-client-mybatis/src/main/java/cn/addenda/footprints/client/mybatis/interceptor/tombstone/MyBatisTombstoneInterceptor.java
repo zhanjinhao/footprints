@@ -1,6 +1,7 @@
 package cn.addenda.footprints.client.mybatis.interceptor.tombstone;
 
 import cn.addenda.footprints.client.constant.Propagation;
+import cn.addenda.footprints.client.mybatis.helper.MsIdExtractHelper;
 import cn.addenda.footprints.client.mybatis.interceptor.AbstractFootprintsMybatisInterceptor;
 import cn.addenda.footprints.client.utils.ConfigContextUtils;
 import cn.addenda.footprints.core.pojo.Binary;
@@ -25,6 +26,13 @@ import org.apache.ibatis.session.RowBounds;
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
 })
 public class MyBatisTombstoneInterceptor extends AbstractFootprintsMybatisInterceptor {
+
+    public MyBatisTombstoneInterceptor(MsIdExtractHelper msIdExtractHelper) {
+        super(msIdExtractHelper);
+    }
+
+    public MyBatisTombstoneInterceptor() {
+    }
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {

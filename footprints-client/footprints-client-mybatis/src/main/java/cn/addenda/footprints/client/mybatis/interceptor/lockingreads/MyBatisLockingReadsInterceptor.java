@@ -1,6 +1,7 @@
 package cn.addenda.footprints.client.mybatis.interceptor.lockingreads;
 
 import cn.addenda.footprints.client.constant.Propagation;
+import cn.addenda.footprints.client.mybatis.helper.MsIdExtractHelper;
 import cn.addenda.footprints.client.mybatis.interceptor.AbstractFootprintsMybatisInterceptor;
 import cn.addenda.footprints.client.utils.ConfigContextUtils;
 import cn.addenda.footprints.core.pojo.Binary;
@@ -24,6 +25,13 @@ import org.apache.ibatis.session.RowBounds;
                 args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})
 })
 public class MyBatisLockingReadsInterceptor extends AbstractFootprintsMybatisInterceptor {
+
+    public MyBatisLockingReadsInterceptor(MsIdExtractHelper msIdExtractHelper) {
+        super(msIdExtractHelper);
+    }
+
+    public MyBatisLockingReadsInterceptor() {
+    }
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {

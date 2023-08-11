@@ -34,6 +34,10 @@ public class BaseEntityInterceptor extends ConnectionPrepareStatementInterceptor
 
     @Override
     protected String process(String sql) {
+        if (!BaseEntityContext.contextActive()) {
+            return sql;
+        }
+
         Boolean disable = JdbcSQLUtils.getOrDefault(BaseEntityContext.getDisable(), false);
         if (Boolean.TRUE.equals(disable)) {
             return sql;

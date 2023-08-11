@@ -5,6 +5,7 @@ import cn.addenda.footprints.core.interceptor.Interceptor;
 import cn.addenda.footprints.core.util.ArrayUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.Ordered;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author addenda
  * @since 2023/6/13 21:17
  */
-public abstract class AbstractFootprintsBeanPostProcessor<T extends Interceptor> implements BeanPostProcessor {
+public abstract class AbstractFootprintsBeanPostProcessor<T extends Interceptor> implements BeanPostProcessor, Ordered {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {

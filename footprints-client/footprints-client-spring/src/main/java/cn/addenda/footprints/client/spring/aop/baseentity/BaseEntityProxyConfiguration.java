@@ -33,6 +33,7 @@ public class BaseEntityProxyConfiguration implements ImportAware {
     Map<String, BaseEntityRewriterConfigurer> baseEntityRewriterConfigurerMap;
 
     private boolean removeEnter;
+    private int order;
     private BaseEntityRewriter baseEntityRewriter;
 
     private boolean reportItemNameExists;
@@ -57,6 +58,7 @@ public class BaseEntityProxyConfiguration implements ImportAware {
     public BaseEntityBeanPostProcessor baseEntityBeanPostProcessor(BeanFactory beanFactory) {
         setBaseEntityRewriter(beanFactory);
 
+        this.order = annotationAttributes.getNumber("order");
         this.removeEnter = annotationAttributes.getBoolean("removeEnter");
         this.insertSelectAddItemMode = annotationAttributes.getEnum("insertSelectAddItemMode");
         this.duplicateKeyUpdate = annotationAttributes.getBoolean("duplicateKeyUpdate");
@@ -97,5 +99,9 @@ public class BaseEntityProxyConfiguration implements ImportAware {
                     insertSelectAddItemMode, duplicateKeyUpdate, updateItemMode, reportItemNameExists);
         }
 
+        @Override
+        public int getOrder() {
+            return order;
+        }
     }
 }

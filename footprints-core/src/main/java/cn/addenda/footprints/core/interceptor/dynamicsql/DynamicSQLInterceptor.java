@@ -44,6 +44,10 @@ public class DynamicSQLInterceptor extends ConnectionPrepareStatementInterceptor
     }
 
     protected String process(String sql) {
+        if (!DynamicSQLContext.contextActive()) {
+            return sql;
+        }
+
         Map<String, List<Map.Entry<DynamicConditionOperation, String>>> conditionMap = DynamicSQLContext.getConditionMap();
         Map<String, List<Map.Entry<DynamicItemOperation, Item>>> itemMap = DynamicSQLContext.getItemMap();
 

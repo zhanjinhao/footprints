@@ -28,6 +28,7 @@ public class SQLCheckProxyConfiguration implements ImportAware {
 
     private Map<String, SQLCheckConfigurer> sqlCheckConfigurerMap;
 
+    private int order;
     private boolean removeEnter;
     private SQLChecker sqlChecker;
     private boolean checkAllColumn;
@@ -48,6 +49,7 @@ public class SQLCheckProxyConfiguration implements ImportAware {
     public SQLCheckBeanPostProcessor sqlCheckBeanPostProcessor(BeanFactory beanFactory) {
         setSqlChecker(beanFactory);
 
+        this.order = annotationAttributes.getNumber("order");
         this.removeEnter = annotationAttributes.getBoolean("removeEnter");
         this.checkAllColumn = annotationAttributes.getBoolean("checkAllColumn");
         this.checkExactIdentifier = annotationAttributes.getBoolean("checkExactIdentifier");
@@ -88,6 +90,10 @@ public class SQLCheckProxyConfiguration implements ImportAware {
                     checkExactIdentifier, checkDmlCondition);
         }
 
+        @Override
+        public int getOrder() {
+            return order;
+        }
     }
 
 }

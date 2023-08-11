@@ -24,7 +24,7 @@ public class JdbcSQLUtils {
     }
 
     public static boolean isInsert(String sql) {
-        return hasPrefix(sql, "isnert");
+        return hasPrefix(sql, "insert");
     }
 
     public static boolean hasPrefix(String sql, String base) {
