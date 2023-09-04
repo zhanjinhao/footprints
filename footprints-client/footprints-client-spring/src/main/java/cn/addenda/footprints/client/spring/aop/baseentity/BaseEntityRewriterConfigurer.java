@@ -3,6 +3,7 @@ package cn.addenda.footprints.client.spring.aop.baseentity;
 import cn.addenda.footprints.client.spring.aop.NamedConfigurer;
 import cn.addenda.footprints.core.convertor.DefaultDataConvertorRegistry;
 import cn.addenda.footprints.core.interceptor.baseentity.BaseEntityRewriter;
+import cn.addenda.footprints.core.interceptor.baseentity.BaseEntitySource;
 import cn.addenda.footprints.core.interceptor.baseentity.DefaultBaseEntitySource;
 import cn.addenda.footprints.core.interceptor.baseentity.DruidBaseEntityRewriter;
 import lombok.Getter;
@@ -18,6 +19,10 @@ public class BaseEntityRewriterConfigurer implements NamedConfigurer {
 
     public BaseEntityRewriterConfigurer() {
         this.baseEntityRewriter = new DruidBaseEntityRewriter(null, null, new DefaultBaseEntitySource(), new DefaultDataConvertorRegistry());
+    }
+
+    public BaseEntityRewriterConfigurer(BaseEntitySource baseEntitySource) {
+        this.baseEntityRewriter = new DruidBaseEntityRewriter(null, null, baseEntitySource, new DefaultDataConvertorRegistry());
     }
 
 }
