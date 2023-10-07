@@ -48,13 +48,13 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
 
     public SelectAddItemVisitor(String sql, String masterView, String itemName) {
         this(sql, null, null, new DefaultDataConvertorRegistry(),
-                masterView, itemName, false);
+            masterView, itemName, false);
     }
 
     public SelectAddItemVisitor(
-            SQLSelectStatement sqlSelectStatement, List<String> included, List<String> notIncluded,
-            DataConvertorRegistry dataConvertorRegistry,
-            String masterView, String itemName, boolean reportAmbiguous) {
+        SQLSelectStatement sqlSelectStatement, List<String> included, List<String> notIncluded,
+        DataConvertorRegistry dataConvertorRegistry,
+        String masterView, String itemName, boolean reportAmbiguous) {
         super(sqlSelectStatement, included, notIncluded, dataConvertorRegistry);
         this.masterView = masterView;
         this.itemName = itemName;
@@ -62,9 +62,9 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
     }
 
     public SelectAddItemVisitor(
-            SQLSelectStatement sqlSelectStatement, String masterView, String itemName) {
+        SQLSelectStatement sqlSelectStatement, String masterView, String itemName) {
         this(sqlSelectStatement, null, null, new DefaultDataConvertorRegistry(),
-                masterView, itemName, false);
+            masterView, itemName, false);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
                     selectResultSelectItemList.add(new SelectResultSelectItem(SQLUtils.toSQLExpr(view + "." + sqlExpr), view + "_" + sqlExpr));
                 } else if (declaredTableList.size() > 1) {
                     ambiguousInfo = String.format("SQLObject: [%s], Ambiguous identifier: [%s], declaredTableList: [%s].",
-                            DruidSQLUtils.toLowerCaseSQL(x), DruidSQLUtils.toLowerCaseSQL(sqlExpr), declaredTableList);
+                        DruidSQLUtils.toLowerCaseSQL(x), DruidSQLUtils.toLowerCaseSQL(sqlExpr), declaredTableList);
                     selectResultSelectItemList.add(new SelectResultSelectItem(sqlExpr, sqlExpr.toString()));
                     if (reportAmbiguous) {
                         throw new FootprintsException(ambiguousInfo);
@@ -140,7 +140,7 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
         }
         List<SelectResultSelectItem> selectResultSelectItemList = new ArrayList<>();
         selectResultSelectItemList.add(
-                new SelectResultSelectItem(SQLUtils.toSQLExpr(view + "." + itemName), view + "_" + itemName));
+            new SelectResultSelectItem(SQLUtils.toSQLExpr(view + "." + itemName), view + "_" + itemName));
         putItemList(x, selectResultSelectItemList);
 
         addMasterTableName(x, tableName);
@@ -156,10 +156,12 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
             List<SelectResultSelectItem> xSelectResultSelectItemList = new ArrayList<>();
             for (SelectResultSelectItem item : selectResultSelectItemList) {
                 xSelectResultSelectItemList.add(new SelectResultSelectItem(
-                        SQLUtils.toSQLExpr(alias + "." + item.getAlias()), alias + "_" + item.getAlias()));
+                    SQLUtils.toSQLExpr(alias + "." + item.getAlias()), alias + "_" + item.getAlias()));
             }
             putItemList(x, xSelectResultSelectItemList);
         }
+
+        addMasterAlias(x, alias);
     }
 
     @Override
@@ -189,7 +191,7 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
         List<SelectResultSelectItem> xSelectResultSelectItemList = new ArrayList<>();
         for (SelectResultSelectItem item : selectResultSelectItemList) {
             xSelectResultSelectItemList.add(new SelectResultSelectItem(
-                    SQLUtils.toSQLExpr(alias + "." + item.getAlias()), alias + "_" + item.getAlias()));
+                SQLUtils.toSQLExpr(alias + "." + item.getAlias()), alias + "_" + item.getAlias()));
         }
         putItemList(x, xSelectResultSelectItemList);
     }
@@ -286,10 +288,14 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
                     SQLUnionQueryTableSource sqlUnionQueryTableSource = (SQLUnionQueryTableSource) from;
                     masterView = sqlUnionQueryTableSource.getAlias();
                 } else if (from instanceof SQLJoinTableSource) {
-                    String masterTableName = getMasterTableName(from);
                     String masterAlias = getMasterAlias(from);
-                    if (masterTableName != null) {
-                        masterView = masterAlias == null ? masterTableName : masterAlias;
+                    if (masterAlias != null) {
+                        masterView = masterAlias;
+                    } else {
+                        String masterTableName = getMasterTableName(from);
+                        if (masterTableName != null) {
+                            masterView = masterTableName;
+                        }
                     }
                 }
             }
@@ -299,9 +305,9 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
             } else {
                 // 获取到masterView下注入的字段
                 List<SQLSelectItem> injected = selectList.stream()
-                        .filter(SelectResultSelectItem.class::isInstance)
-                        .filter(f -> f.getAlias().toLowerCase().startsWith(masterView.toLowerCase() + "_"))
-                        .filter(f -> f.getAlias().endsWith(itemName)).collect(Collectors.toList());
+                    .filter(SelectResultSelectItem.class::isInstance)
+                    .filter(f -> f.getAlias().toLowerCase().startsWith(masterView.toLowerCase() + "_"))
+                    .filter(f -> f.getAlias().endsWith(itemName)).collect(Collectors.toList());
 
                 // 只有当masterView注入的字段个数为1时才进行masterView改写
                 if (injected.size() == 1) {
@@ -360,6 +366,8 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
         String whereRightAlias = getMasterAlias(tableSource);
         if (whereRightTableName != null) {
             addMasterTableName(x, whereRightTableName);
+        }
+        if (whereRightAlias != null) {
             addMasterAlias(x, whereRightAlias);
         }
     }
@@ -454,10 +462,10 @@ public class SelectAddItemVisitor extends AbstractAddItemVisitor<SQLSelectStatem
     @Override
     public String toString() {
         return "SelectAddItemVisitor{" +
-                "masterView='" + masterView + '\'' +
-                ", reportAmbiguous=" + reportAmbiguous +
-                ", itemName='" + itemName + '\'' +
-                "} " + super.toString();
+            "masterView='" + masterView + '\'' +
+            ", reportAmbiguous=" + reportAmbiguous +
+            ", itemName='" + itemName + '\'' +
+            "} " + super.toString();
     }
 
 }

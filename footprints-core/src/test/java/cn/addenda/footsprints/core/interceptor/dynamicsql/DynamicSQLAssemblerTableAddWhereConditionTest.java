@@ -40,7 +40,6 @@ public class DynamicSQLAssemblerTableAddWhereConditionTest {
                 continue;
             }
             System.out.println(line + " : ------------------------------------------------------------------------------------");
-            log.error(line + " : ------------------------------------------------------------------------------------");
             DynamicSQLRewriter druidDynamicSQLAssembler = new DruidDynamicSQLRewriter(new DefaultDataConvertorRegistry());
             String s = druidDynamicSQLAssembler.tableAddWhereCondition(DruidSQLUtils.toLowerCaseSQL(sqlStatements.get(0)), null, "if_del=0");
             sqlStatements = SQLUtils.parseStatements(s, DbType.mysql);

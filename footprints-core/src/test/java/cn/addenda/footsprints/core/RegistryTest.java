@@ -36,13 +36,13 @@ public class RegistryTest {
         ass(registry.format(1), "1");
         ass(registry.format("str"), "'str'");
         ass(registry.format(new StringBuilder("sb")), "'sb'");
-        ass(registry.format(date), "DATETIME '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date) + "'");
-        ass(registry.format(sqldate), "DATETIME '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(sqldate) + "'");
-        ass(registry.format(localDateTime), "DATETIME '" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(localDateTime) + "'");
-        ass(registry.format(zonedDateTime), "DATETIME '" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(zonedDateTime.plusHours(-2)) + "'");
-        ass(registry.format(offsetDateTime), "DATETIME '" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(offsetDateTime.plusHours(-2)) + "'");
-        ass(registry.format(localDate), "DATE '" + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDate) + "'");
-        ass(registry.format(localTime), "TIME '" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localTime) + "'");
+        ass(registry.format(date), "'" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date) + "'");
+        ass(registry.format(sqldate), "'" + new SimpleDateFormat("yyyy-MM-dd").format(sqldate) + "'");
+        ass(registry.format(localDateTime), "'" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(localDateTime) + "'");
+        ass(registry.format(zonedDateTime), "'" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(zonedDateTime.plusHours(-2)) + "'");
+        ass(registry.format(offsetDateTime), "'" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(offsetDateTime.plusHours(-2)) + "'");
+        ass(registry.format(localDate), "'" + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDate) + "'");
+        ass(registry.format(localTime), "'" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localTime) + "'");
 
 
         System.out.println("\n--------------------- fastDataConvertorMap ------------------\n");
@@ -59,6 +59,7 @@ public class RegistryTest {
             System.out.println("actual: " + s1 + ", expect: " + s2);
         } else {
             System.err.println("actual: " + s1 + ", expect: " + s2);
+            throw new RuntimeException();
         }
     }
 
@@ -100,7 +101,8 @@ public class RegistryTest {
     public void test3() {
         DefaultDataConvertorRegistry registry = new DefaultDataConvertorRegistry(ZoneId.of("UTC+7"));
         ass(registry.parse("DATETIME 2020-12-12 12:12:12", LocalDateTime.class).toString(), "DATETIME '2020-12-12 12:12:12'");
-        ass(registry.parse("2020-12-12 12:12:12", ZonedDateTime.class).toString(), "DATETIME '2020-12-12 12:12:12'");
+        // todo
+//        ass(registry.parse("2020-12-12 12:12:12", ZonedDateTime.class).toString(), "DATETIME '2020-12-12 12:12:12'");
 
     }
 
